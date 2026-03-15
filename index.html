@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghost PM Signal — PM Intelligence Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111;
+      --surface2: #1a1a1a;
+      --border: #222;
+      --border2: #2a2a2a;
+      --ghost: #30cf43;
+      --ghost-dim: rgba(48,207,67,0.12);
+      --ghost-border: rgba(48,207,67,0.25);
+      --amber: #fbbf24;
+      --amber-dim: rgba(251,191,36,0.12);
+      --red: #f87171;
+      --blue: #6366f1;
+      --text: #f0f0f0;
+      --muted: #666;
+      --dim: #333;
+      --radius: 8px;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header-left { display: flex; flex-direction: column; gap: 4px; }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-dot { font-size: 22px; color: var(--ghost); line-height: 1; }
+    .logo-text { font-size: 18px; font-weight: 700; }
+    .logo-text span { color: var(--muted); font-weight: 400; }
+    .header-sub { font-size: 12px; color: var(--muted); margin-left: 2px; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .header-link { font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .header-link:hover { color: var(--text); }
+    .updated { font-size: 11px; color: var(--dim); font-family: monospace; }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      overflow-x: auto;
+    }
+    .tab {
+      padding: 12px 20px;
+      font-size: 13px;
+      color: var(--muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.2s, border-color 0.2s;
+      user-select: none;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--ghost); border-bottom-color: var(--ghost); }
+
+    /* Content */
+    .content { padding: 32px 40px; max-width: 1100px; }
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* Section headers */
+    .section-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .section-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-ghost { background: var(--ghost-dim); color: var(--ghost); border: 1px solid var(--ghost-border); }
+    .badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.25); }
+    .badge-muted { background: rgba(102,102,102,0.15); color: var(--muted); border: 1px solid #333; }
+    .badge-blue { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.25); }
+    .badge-red { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+
+    /* Rows */
+    .row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .row:last-child { border-bottom: none; }
+    .row-main { flex: 1; min-width: 0; }
+    .row-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+    .row-title a { color: var(--text); text-decoration: none; }
+    .row-title a:hover { color: var(--ghost); }
+    .row-meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
+    .row-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+    /* Votes */
+    .votes {
+      min-width: 52px;
+      text-align: center;
+      background: var(--ghost-dim);
+      border: 1px solid var(--ghost-border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      flex-shrink: 0;
+    }
+    .votes-num { font-size: 16px; font-weight: 700; color: var(--ghost); line-height: 1; }
+    .votes-label { font-size: 10px; color: rgba(48,207,67,0.6); }
+
+    /* Top 3 highlight */
+    .row-top { background: rgba(48,207,67,0.04); border-radius: 6px; padding: 10px; margin-bottom: 4px; border-bottom: none !important; }
+
+    /* Link arrow */
+    .link-arrow { font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .link-arrow:hover { color: var(--ghost); }
+
+    /* Sub-section label */
+    .sub-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 20px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sub-label.amber { color: var(--amber); border-color: rgba(251,191,36,0.2); }
+
+    /* PM Brief */
+    .brief-banner {
+      font-size: 14px;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .gen-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: var(--ghost);
+      color: #000;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-bottom: 20px;
+    }
+    .gen-btn:hover { opacity: 0.9; }
+    .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .loading-state {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 16px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .loading-state.visible { display: flex; }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid var(--border2);
+      border-top-color: var(--ghost);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .brief-output {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+    .brief-output h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 24px 0 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--ghost);
+      color: var(--text);
+    }
+    .brief-output h2:first-child { margin-top: 0; }
+    .brief-output h3 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: #c0c0d0; }
+    .brief-output p { margin: 8px 0; color: #d0d0e0; line-height: 1.7; }
+    .brief-output ul { margin: 8px 0 8px 20px; }
+    .brief-output li { margin: 4px 0; color: #d0d0e0; line-height: 1.7; }
+    .brief-output strong { color: var(--text); }
+    .brief-output code { font-family: monospace; font-size: 12px; background: var(--surface2); padding: 1px 5px; border-radius: 3px; color: var(--ghost); }
+    .brief-meta { font-size: 11px; color: var(--dim); margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .regen-btn { font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; text-decoration: underline; }
+    .regen-btn:hover { color: var(--text); }
+
+    .brief-ready {
+      font-size: 12px;
+      color: var(--ghost);
+      margin-bottom: 12px;
+      display: none;
+    }
+    .brief-ready.visible { display: block; }
+
+    /* Skeletons */
+    .skeleton {
+      background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 4px;
+      height: 16px;
+      margin: 8px 0;
+    }
+    .skeleton.short { width: 40%; }
+    .skeleton.medium { width: 70%; }
+    .skeleton.full { width: 100%; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* Source status footer */
+    .status-footer {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 16px 40px;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+    .status-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); }
+    .status-dot.ok { background: var(--ghost); }
+    .status-dot.error { background: var(--red); }
+
+    /* HN comment snippet */
+    .comment-text {
+      font-size: 13px;
+      color: #b0b0c0;
+      line-height: 1.6;
+      margin: 4px 0;
+      font-style: italic;
+      border-left: 2px solid var(--border2);
+      padding-left: 10px;
+    }
+
+    /* Tags */
+    .tag-chip {
+      display: inline-flex;
+      padding: 1px 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      font-size: 10px;
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    /* Source note */
+    .source-note {
+      font-size: 11px;
+      color: var(--dim);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Reactions badge */
+    .reactions { font-size: 12px; color: var(--muted); min-width: 40px; text-align: right; }
+
+    /* Ghost releases */
+    .release-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .release-item:last-child { border-bottom: none; }
+    .release-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+    .release-title a { color: var(--text); text-decoration: none; }
+    .release-title a:hover { color: var(--ghost); }
+    .release-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+    .release-date { font-size: 11px; color: var(--dim); font-family: monospace; margin-top: 2px; }
+
+    @media (max-width: 600px) {
+      .header { padding: 16px 20px; }
+      .tabs { padding: 0 20px; }
+      .content { padding: 20px; }
+      .status-footer { padding: 12px 20px; }
+      .header-right { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="logo">
+      <span class="logo-dot">◉</span>
+      <span class="logo-text">Ghost PM Signal <span>/ Intelligence Dashboard</span></span>
+    </div>
+    <div class="header-sub">User voice · Competitor watch · Community sentiment · Claude synthesis</div>
+  </div>
+  <div class="header-right">
+    <span class="updated" id="updated">Loading...</span>
+    <a href="https://sinkrest.github.io/romans-lab" target="_blank" class="header-link">Roman's Lab</a>
+    <a href="https://github.com/sinkrest/ghost-pm-signal" target="_blank" class="header-link">GitHub</a>
+    <a href="https://romanmartins.com" target="_blank" class="header-link">romanmartins.com</a>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="brief" onclick="switchTab('brief')">PM Brief</div>
+  <div class="tab" data-tab="votes" onclick="switchTab('votes')">Feature Votes</div>
+  <div class="tab" data-tab="github" onclick="switchTab('github')">GitHub</div>
+  <div class="tab" data-tab="hn" onclick="switchTab('hn')">HN Pulse</div>
+  <div class="tab" data-tab="competitors" onclick="switchTab('competitors')">Competitor Watch</div>
+  <div class="tab" data-tab="releases" onclick="switchTab('releases')">Ghost Releases</div>
+</div>
+
+<div class="content">
+
+  <!-- PM Brief Tab -->
+  <div class="section active" id="tab-brief">
+    <div class="brief-banner">"What should Ghost build next?" — Let Claude answer based on live signal data.</div>
+    <div class="brief-ready" id="brief-ready">✓ Signal data loaded — ready to generate PM brief</div>
+    <button class="gen-btn" id="gen-btn" onclick="generateBrief()">Generate PM Brief</button>
+    <div class="loading-state" id="brief-loading">
+      <div class="spinner"></div>
+      Claude is reviewing this week's signals...
+    </div>
+    <div id="brief-output-wrap" style="display:none">
+      <div class="brief-output" id="brief-output"></div>
+      <div class="brief-meta">
+        <span id="brief-time"></span>
+        <button class="regen-btn" onclick="generateBrief()">Regenerate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feature Votes Tab -->
+  <div class="section" id="tab-votes">
+    <div class="section-title">Feature Votes</div>
+    <div class="section-sub" id="votes-sub">Loading...</div>
+    <div class="card" id="votes-list">
+      <div class="skeleton full"></div>
+      <div class="skeleton medium"></div>
+      <div class="skeleton full"></div>
+      <div class="skeleton short"></div>
+      <div class="skeleton full"></div>
+      <div class="skeleton medium"></div>
+    </div>
+  </div>
+
+  <!-- GitHub Tab -->
+  <div class="section" id="tab-github">
+    <div class="section-title">GitHub</div>
+    <div class="section-sub">Feature requests from TryGhost/Ghost · ActivityPub strategic issues</div>
+    <div class="card">
+      <div class="sub-label">Feature Requests — TryGhost/Ghost</div>
+      <div id="github-features">
+        <div class="skeleton full"></div>
+        <div class="skeleton medium"></div>
+        <div class="skeleton full"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sub-label amber">Ghost's Fediverse Bet — TryGhost/ActivityPub</div>
+      <div style="font-size:12px;color:var(--amber);margin-bottom:12px">Ghost is actively betting on the open social web. This repo tracks their Fediverse implementation.</div>
+      <div id="github-activitypub">
+        <div class="skeleton full"></div>
+        <div class="skeleton medium"></div>
+        <div class="skeleton full"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HN Pulse Tab -->
+  <div class="section" id="tab-hn">
+    <div class="section-title">HN Pulse</div>
+    <div class="section-sub">How the technical community talks about Ghost — last 90 days</div>
+    <div class="card">
+      <div class="sub-label">Discussions (stories)</div>
+      <div id="hn-stories">
+        <div class="skeleton full"></div>
+        <div class="skeleton medium"></div>
+        <div class="skeleton full"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sub-label">Community Sentiment (comments)</div>
+      <div id="hn-comments">
+        <div class="skeleton full"></div>
+        <div class="skeleton medium"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Competitor Watch Tab -->
+  <div class="section" id="tab-competitors">
+    <div class="section-title">Competitor Watch</div>
+    <div class="section-sub">What Ghost's closest competitor is shipping</div>
+    <div class="card">
+      <div class="sub-label">Kit (ConvertKit) — Recently Shipped</div>
+      <div id="kit-list">
+        <div class="skeleton full"></div>
+        <div class="skeleton medium"></div>
+        <div class="skeleton full"></div>
+      </div>
+      <div class="source-note" style="margin-top:16px">
+        <strong>Note:</strong> Beehiiv and Substack changelogs are not publicly accessible. Kit is Ghost's most direct competitor in creator monetisation.<br>
+        <span style="color:var(--ghost);cursor:pointer" onclick="switchTab('brief')">→ See what this means for Ghost in PM Brief</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ghost Releases Tab -->
+  <div class="section" id="tab-releases">
+    <div class="section-title">Ghost Releases</div>
+    <div class="section-sub">What shipped + positioning signals from ghost.org</div>
+    <div class="card">
+      <div class="sub-label">What Shipped — ghost.org/changelog</div>
+      <div id="ghost-changelog">
+        <div class="skeleton full"></div>
+        <div class="skeleton medium"></div>
+        <div class="skeleton full"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sub-label">From the Blog — ghost.org/blog</div>
+      <div id="ghost-blog">
+        <div class="skeleton full"></div>
+        <div class="skeleton medium"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="status-footer" id="status-footer">
+  <div class="status-item"><div class="status-dot" id="dot-forum"></div> Forum</div>
+  <div class="status-item"><div class="status-dot" id="dot-github"></div> GitHub</div>
+  <div class="status-item"><div class="status-dot" id="dot-activitypub"></div> ActivityPub</div>
+  <div class="status-item"><div class="status-dot" id="dot-hn"></div> HN</div>
+  <div class="status-item"><div class="status-dot" id="dot-kit"></div> Kit</div>
+  <div class="status-item"><div class="status-dot" id="dot-changelog"></div> Changelog</div>
+</div>
+
+<script>
+var appData = null;
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelector('[data-tab=' + name + ']').classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  var d = new Date(dateStr);
+  var diff = (Date.now() - d) / 1000;
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 2592000) return Math.floor(diff / 86400) + 'd ago';
+  return Math.floor(diff / 2592000) + 'mo ago';
+}
+
+function fmtDate(dateStr) {
+  if (!dateStr) return '';
+  try { return new Date(dateStr).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+  catch(e) { return dateStr; }
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function setDot(id, status) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('ok', 'error');
+  if (status === 'fulfilled') el.classList.add('ok');
+  else if (status === 'rejected') el.classList.add('error');
+}
+
+function renderVotes(forum) {
+  if (!forum || !forum.length) {
+    document.getElementById('votes-list').innerHTML = '<div style="color:var(--muted);font-size:13px">Ghost Forum unavailable. Try refreshing.</div>';
+    document.getElementById('votes-sub').textContent = 'Unavailable';
+    return;
+  }
+  document.getElementById('votes-sub').textContent = 'Ghost Forum Ideas — ' + forum.length + ' requests · Sorted by votes';
+  var html = '';
+  forum.forEach(function(t, i) {
+    var isTop = i < 3;
+    html += '<div class="row' + (isTop ? ' row-top' : '') + '">';
+    html += '<div class="votes"><div class="votes-num">' + (t.votes || 0) + '</div><div class="votes-label">votes</div></div>';
+    html += '<div class="row-main">';
+    html += '<div class="row-title"><a href="' + esc(t.url) + '" target="_blank">' + esc(t.title) + '</a>';
+    if (isTop) html += ' <span class="badge badge-ghost" style="margin-left:6px">Top ' + (i+1) + '</span>';
+    (t.tags || []).forEach(function(tag) { html += '<span class="tag-chip">' + esc(tag) + '</span>'; });
+    html += '</div>';
+    html += '<div class="row-meta">';
+    html += '<span>' + t.replies + ' replies</span>';
+    html += '<span>' + (t.views || 0).toLocaleString() + ' views</span>';
+    html += '<span>' + timeAgo(t.last_activity) + '</span>';
+    html += '</div></div>';
+    html += '<div class="row-right"><a href="' + esc(t.url) + '" target="_blank" class="link-arrow">↗</a></div>';
+    html += '</div>';
+  });
+  html += '<div class="source-note">Source: forum.ghost.org/c/ideas · Direct community votes · ' + forum.length + ' open requests</div>';
+  document.getElementById('votes-list').innerHTML = html;
+}
+
+function renderGitHub(features, activitypub) {
+  var fEl = document.getElementById('github-features');
+  if (!features || !features.length) {
+    fEl.innerHTML = '<div style="color:var(--muted);font-size:13px">GitHub feature requests unavailable.</div>';
+  } else {
+    var html = '';
+    features.forEach(function(i) {
+      html += '<div class="row">';
+      html += '<div class="reactions">+' + (i.reactions || 0) + '</div>';
+      html += '<div class="row-main">';
+      html += '<div class="row-title"><a href="' + esc(i.url) + '" target="_blank">' + esc(i.title) + '</a></div>';
+      html += '<div class="row-meta"><span>#' + i.number + '</span><span>' + i.comments + ' comments</span><span>' + fmtDate(i.created_at) + '</span>';
+      html += '<span><span class="badge ' + (i.state === 'open' ? 'badge-ghost' : 'badge-muted') + '">' + i.state + '</span></span>';
+      html += '</div></div>';
+      html += '<a href="' + esc(i.url) + '" target="_blank" class="link-arrow">↗</a>';
+      html += '</div>';
+    });
+    fEl.innerHTML = html;
+  }
+
+  var aEl = document.getElementById('github-activitypub');
+  if (!activitypub || !activitypub.length) {
+    aEl.innerHTML = '<div style="color:var(--muted);font-size:13px">ActivityPub issues unavailable.</div>';
+  } else {
+    var html2 = '';
+    activitypub.forEach(function(i) {
+      html2 += '<div class="row">';
+      html2 += '<div class="reactions">+' + (i.reactions || 0) + '</div>';
+      html2 += '<div class="row-main">';
+      html2 += '<div class="row-title"><a href="' + esc(i.url) + '" target="_blank">' + esc(i.title) + '</a></div>';
+      html2 += '<div class="row-meta"><span>#' + i.number + '</span><span>' + i.comments + ' comments</span><span>' + fmtDate(i.created_at) + '</span></div>';
+      html2 += '</div>';
+      html2 += '<a href="' + esc(i.url) + '" target="_blank" class="link-arrow">↗</a>';
+      html2 += '</div>';
+    });
+    html2 += '<div class="source-note">Note: ActivityPub = Ghost\'s strategic investment in the open social web (Fediverse/federation)</div>';
+    aEl.innerHTML = html2;
+  }
+}
+
+function renderHN(stories, comments) {
+  var sEl = document.getElementById('hn-stories');
+  if (!stories || !stories.length) {
+    sEl.innerHTML = '<div style="color:var(--muted);font-size:13px">No recent HN discussions found.</div>';
+  } else {
+    var html = '';
+    stories.forEach(function(h) {
+      html += '<div class="row">';
+      html += '<div class="votes" style="background:rgba(255,102,0,0.08);border-color:rgba(255,102,0,0.2)"><div class="votes-num" style="color:#ff6600;font-size:14px">' + (h.points || 0) + '</div><div class="votes-label" style="color:rgba(255,102,0,0.5)">pts</div></div>';
+      html += '<div class="row-main">';
+      html += '<div class="row-title"><a href="' + esc(h.hn_url) + '" target="_blank">' + esc(h.title) + '</a></div>';
+      html += '<div class="row-meta"><span>' + h.comments + ' comments</span><span>' + timeAgo(h.created_at) + '</span>';
+      if (h.url && h.url !== h.hn_url) html += '<a href="' + esc(h.url) + '" target="_blank" class="link-arrow" style="font-size:11px">source ↗</a>';
+      html += '</div></div>';
+      html += '<a href="' + esc(h.hn_url) + '" target="_blank" class="link-arrow">↗</a>';
+      html += '</div>';
+    });
+    sEl.innerHTML = html;
+  }
+
+  var cEl = document.getElementById('hn-comments');
+  if (!comments || !comments.length) {
+    cEl.innerHTML = '<div style="color:var(--muted);font-size:13px">No recent HN comments found.</div>';
+  } else {
+    var html2 = '';
+    comments.forEach(function(c) {
+      html2 += '<div class="row">';
+      html2 += '<div class="row-main">';
+      if (c.text) html2 += '<div class="comment-text">' + esc(c.text) + (c.text.length >= 300 ? '...' : '') + '</div>';
+      html2 += '<div class="row-meta" style="margin-top:4px"><span>in: ' + esc(c.story_title || '—') + '</span><span>' + esc(c.author) + '</span><span>' + timeAgo(c.created_at) + '</span></div>';
+      html2 += '</div>';
+      html2 += '<a href="' + esc(c.hn_url) + '" target="_blank" class="link-arrow">↗</a>';
+      html2 += '</div>';
+    });
+    cEl.innerHTML = html2;
+  }
+}
+
+function renderKit(kit) {
+  var el = document.getElementById('kit-list');
+  if (!kit || !kit.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:13px">Kit changelog unavailable. Their site may have changed structure.</div>';
+    return;
+  }
+  var html = '';
+  kit.forEach(function(k) {
+    var isFeature = k.category && k.category.toLowerCase().includes('feature');
+    var badgeClass = isFeature ? 'badge-blue' : 'badge-amber';
+    html += '<div class="row">';
+    html += '<div class="row-main">';
+    html += '<div class="row-title">' + esc(k.title) + ' <span class="badge ' + badgeClass + '" style="margin-left:6px">' + esc(k.category) + '</span></div>';
+    if (k.date) html += '<div class="row-meta"><span>' + esc(k.date) + '</span></div>';
+    html += '</div>';
+    html += '<a href="' + esc(k.url) + '" target="_blank" class="link-arrow">↗</a>';
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function renderReleases(changelog, blog) {
+  var cEl = document.getElementById('ghost-changelog');
+  if (!changelog || !changelog.length) {
+    cEl.innerHTML = '<div style="color:var(--muted);font-size:13px">Ghost changelog unavailable.</div>';
+  } else {
+    var html = '';
+    changelog.forEach(function(r) {
+      html += '<div class="release-item">';
+      html += '<div class="release-title"><a href="' + esc(r.link) + '" target="_blank">' + esc(r.title) + '</a></div>';
+      if (r.description) html += '<div class="release-desc">' + esc(r.description) + '</div>';
+      if (r.pubDate) html += '<div class="release-date">' + fmtDate(r.pubDate) + '</div>';
+      html += '</div>';
+    });
+    cEl.innerHTML = html;
+  }
+
+  var bEl = document.getElementById('ghost-blog');
+  if (!blog || !blog.length) {
+    bEl.innerHTML = '<div style="color:var(--muted);font-size:13px">Ghost blog unavailable.</div>';
+  } else {
+    var html2 = '';
+    blog.forEach(function(b) {
+      html2 += '<div class="release-item">';
+      html2 += '<div class="release-title"><a href="' + esc(b.link) + '" target="_blank">' + esc(b.title) + '</a></div>';
+      if (b.pubDate) html2 += '<div class="release-date">' + fmtDate(b.pubDate) + '</div>';
+      html2 += '</div>';
+    });
+    bEl.innerHTML = html2;
+  }
+}
+
+function loadData() {
+  fetch('/api/data')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      appData = data;
+
+      // Update timestamp
+      if (data.fetched_at) {
+        var d = new Date(data.fetched_at);
+        document.getElementById('updated').textContent = 'Updated ' + timeAgo(data.fetched_at);
+      }
+
+      // Update status dots
+      var s = data.sources_status || {};
+      setDot('dot-forum', s.forum);
+      setDot('dot-github', s.github);
+      setDot('dot-activitypub', s.activitypub);
+      setDot('dot-hn', s.hn);
+      setDot('dot-kit', s.kit);
+      setDot('dot-changelog', s.changelog);
+
+      // Render all tabs
+      renderVotes(data.forum);
+      renderGitHub(data.github?.features, data.github?.activitypub);
+      renderHN(data.hn?.stories, data.hn?.comments);
+      renderKit(data.competitors?.kit);
+      renderReleases(data.ghost?.changelog, data.ghost?.blog);
+
+      // Signal brief is ready
+      document.getElementById('brief-ready').classList.add('visible');
+    })
+    .catch(function(err) {
+      document.getElementById('updated').textContent = 'Load error';
+      console.error(err);
+    });
+}
+
+function generateBrief() {
+  if (!appData) {
+    alert('Signal data is still loading. Please wait a moment and try again.');
+    return;
+  }
+
+  var btn = document.getElementById('gen-btn');
+  var loading = document.getElementById('brief-loading');
+  var outputWrap = document.getElementById('brief-output-wrap');
+
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+  loading.classList.add('visible');
+  outputWrap.style.display = 'none';
+
+  fetch('/api/synthesize', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data: appData })
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+      loading.classList.remove('visible');
+      btn.disabled = false;
+      btn.textContent = 'Generate PM Brief';
+
+      if (result.error) {
+        document.getElementById('brief-output').innerHTML = '<div style="color:var(--red);font-size:13px">Error: ' + esc(result.error) + '</div>';
+      } else {
+        document.getElementById('brief-output').innerHTML = marked.parse(result.synthesis || '');
+      }
+
+      if (result.generated_at) {
+        document.getElementById('brief-time').textContent = 'Generated ' + new Date(result.generated_at).toLocaleTimeString() + ' · Signals from last 90 days';
+      }
+
+      outputWrap.style.display = 'block';
+    })
+    .catch(function(err) {
+      loading.classList.remove('visible');
+      btn.disabled = false;
+      btn.textContent = 'Generate PM Brief';
+      document.getElementById('brief-output').innerHTML = '<div style="color:var(--red);font-size:13px">Request failed. Check your connection and try again.</div>';
+      outputWrap.style.display = 'block';
+      console.error(err);
+    });
+}
+
+// Load on page open
+loadData();
+</script>
+</body>
+</html>
