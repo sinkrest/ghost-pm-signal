@@ -11,479 +11,428 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0a0a0a;
-      --surface: #111;
-      --surface2: #1a1a1a;
-      --border: #222;
-      --border2: #2a2a2a;
-      --ghost: #30cf43;
-      --ghost-dim: rgba(48,207,67,0.12);
-      --ghost-border: rgba(48,207,67,0.25);
-      --amber: #fbbf24;
-      --amber-dim: rgba(251,191,36,0.12);
-      --red: #f87171;
-      --blue: #6366f1;
-      --text: #f0f0f0;
-      --muted: #666;
-      --dim: #333;
-      --radius: 8px;
+      --bg:            #f9fafb;
+      --bg-card:       #ffffff;
+      --bg-card-alt:   #f3f4f6;
+      --border:        #e5e7eb;
+      --border-mid:    #d1d5db;
+      --text:          #15171a;
+      --text-muted:    #6b7280;
+      --text-dim:      #9ca3af;
+      --accent:        #30cf43;
+      --accent-dark:   #22a832;
+      --accent-light:  rgba(48,207,67,0.10);
+      --accent-border: rgba(48,207,67,0.30);
+      --amber:         #d97706;
+      --amber-bg:      rgba(217,119,6,0.08);
+      --red:           #dc2626;
+      --red-bg:        rgba(220,38,38,0.08);
+      --blue:          #4f46e5;
+      --blue-bg:       rgba(79,70,229,0.08);
+      --btn-bg:        #15171a;
+      --btn-text:      #ffffff;
+      --radius:        8px;
+      --radius-sm:     6px;
+      --shadow:        0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+      --shadow-md:     0 4px 16px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      --max-w:         960px;
+      --font:          'Inter', system-ui, -apple-system, sans-serif;
     }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      font-size: 14px;
-      line-height: 1.6;
-    }
+    html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); line-height: 1.6; min-height: 100vh; }
+    a { color: var(--text-muted); text-decoration: none; }
+    a:hover { color: var(--text); }
 
-    /* Header */
-    .header {
-      border-bottom: 1px solid var(--border);
-      padding: 20px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
+    /* Nav */
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(249,250,251,0.92);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border); padding: 0 24px;
     }
-    .header-left { display: flex; flex-direction: column; gap: 4px; }
-    .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-dot { font-size: 22px; color: var(--ghost); line-height: 1; }
-    .logo-text { font-size: 18px; font-weight: 700; }
-    .logo-text span { color: var(--muted); font-weight: 400; }
-    .header-sub { font-size: 12px; color: var(--muted); margin-left: 2px; }
-    .header-right { display: flex; align-items: center; gap: 16px; }
-    .header-link { font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
-    .header-link:hover { color: var(--text); }
-    .updated { font-size: 11px; color: var(--dim); font-family: monospace; }
+    .nav-inner {
+      max-width: var(--max-w); margin: 0 auto; height: 52px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 14px; font-weight: 600; color: var(--text); text-decoration: none;
+    }
+    .nav-logo .ghost-icon {
+      width: 24px; height: 24px; background: var(--btn-bg);
+      border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px;
+      color: #ffffff;
+    }
+    .nav-links { display: flex; align-items: center; gap: 4px; }
+    .nav-link {
+      font-size: 12px; font-weight: 500; color: var(--text-muted);
+      padding: 5px 10px; border-radius: var(--radius-sm); border: 1px solid transparent;
+      text-decoration: none; transition: all 0.15s;
+    }
+    .nav-link:hover { border-color: var(--border); background: var(--bg-card); color: var(--text); }
+    /* Ghost Suite dropdown */
+    .suite-dropdown { position: relative; }
+    .suite-btn { background: none; border: 1px solid transparent; font-size: 12px; font-weight: 500; color: var(--text-muted); padding: 5px 10px; border-radius: var(--radius-sm); cursor: pointer; display: flex; align-items: center; gap: 4px; font-family: inherit; transition: all 0.15s; }
+    .suite-dropdown:hover .suite-btn { border-color: var(--border); background: var(--bg-card); color: var(--text); }
+    .suite-menu { display: none; position: absolute; top: calc(100% + 4px); right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px; min-width: 250px; box-shadow: var(--shadow-md); z-index: 200; }
+    .suite-dropdown:hover .suite-menu { display: block; }
+    .suite-menu a, .suite-menu span { display: block; padding: 7px 10px; font-size: 12px; color: var(--text-muted); border-radius: calc(var(--radius) - 2px); text-decoration: none; transition: background 0.15s, color 0.15s; }
+    .suite-menu a:hover { background: var(--bg-card-alt); color: var(--text); }
+    .suite-menu .suite-active { color: var(--accent); font-weight: 600; cursor: default; }
+    .suite-divider { height: 1px; background: var(--border); margin: 4px 0; }
+    /* Hide nav when embedded in iframe */
+    .in-iframe .nav { display: none; }
+    .in-iframe .shell { padding-top: 24px; }
+
+    /* Shell */
+    .shell { max-width: var(--max-w); margin: 0 auto; padding: 32px 24px 64px; }
+
+    /* Header area */
+    .page-header { margin-bottom: 28px; }
+    .header-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--accent-dark); background: var(--accent-light); border: 1px solid var(--accent-border);
+      padding: 4px 10px; border-radius: 20px; margin-bottom: 12px;
+    }
+    .page-header h1 { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .page-header p { font-size: 14px; color: var(--text-muted); }
+    .updated-label { font-size: 11px; color: var(--text-dim); font-family: monospace; margin-top: 6px; }
 
     /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 0;
-      border-bottom: 1px solid var(--border);
-      padding: 0 40px;
-      overflow-x: auto;
+    .tab-bar {
+      display: flex; gap: 0; border-bottom: 1px solid var(--border);
+      margin-bottom: 28px; overflow-x: auto;
     }
-    .tab {
-      padding: 12px 20px;
-      font-size: 13px;
-      color: var(--muted);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      white-space: nowrap;
-      transition: color 0.2s, border-color 0.2s;
-      user-select: none;
+    .tab-bar::-webkit-scrollbar { display: none; }
+    .tab-item {
+      padding: 10px 18px; font-size: 13px; font-weight: 500;
+      color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
+      white-space: nowrap; transition: color 0.15s, border-color 0.15s; user-select: none;
     }
-    .tab:hover { color: var(--text); }
-    .tab.active { color: var(--ghost); border-bottom-color: var(--ghost); }
-
-    /* Content */
-    .content { padding: 32px 40px; max-width: 1100px; }
-    .section { display: none; }
-    .section.active { display: block; }
-
-    /* Section headers */
-    .section-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-    .section-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .tab-item:hover { color: var(--text); }
+    .tab-item.active { color: var(--accent-dark); border-bottom-color: var(--accent); }
 
     /* Cards */
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px; margin-bottom: 16px;
+      box-shadow: var(--shadow);
     }
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 16px;
+    .card-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--text-dim); margin-bottom: 16px;
     }
+    .card-label.amber { color: var(--amber); }
 
-    /* Badges */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .badge-ghost { background: var(--ghost-dim); color: var(--ghost); border: 1px solid var(--ghost-border); }
-    .badge-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.25); }
-    .badge-muted { background: rgba(102,102,102,0.15); color: var(--muted); border: 1px solid #333; }
-    .badge-blue { background: rgba(99,102,241,0.12); color: #818cf8; border: 1px solid rgba(99,102,241,0.25); }
-    .badge-red { background: rgba(248,113,113,0.12); color: var(--red); border: 1px solid rgba(248,113,113,0.25); }
+    /* Section */
+    .section { display: none; }
+    .section.active { display: block; }
+    .section-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+    .section-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
 
     /* Rows */
     .row {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
     }
     .row:last-child { border-bottom: none; }
     .row-main { flex: 1; min-width: 0; }
     .row-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
     .row-title a { color: var(--text); text-decoration: none; }
-    .row-title a:hover { color: var(--ghost); }
-    .row-meta { font-size: 12px; color: var(--muted); display: flex; gap: 10px; flex-wrap: wrap; }
-    .row-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .row-title a:hover { color: var(--accent-dark); }
+    .row-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 10px; flex-wrap: wrap; }
+    .link-arrow { font-size: 12px; color: var(--text-dim); text-decoration: none; flex-shrink: 0; transition: color 0.15s; }
+    .link-arrow:hover { color: var(--accent-dark); }
 
-    /* Votes */
+    /* Votes badge */
     .votes {
-      min-width: 52px;
-      text-align: center;
-      background: var(--ghost-dim);
-      border: 1px solid var(--ghost-border);
-      border-radius: 6px;
-      padding: 4px 8px;
-      flex-shrink: 0;
+      min-width: 52px; text-align: center; flex-shrink: 0;
+      background: var(--accent-light); border: 1px solid var(--accent-border);
+      border-radius: 6px; padding: 4px 8px;
     }
-    .votes-num { font-size: 16px; font-weight: 700; color: var(--ghost); line-height: 1; }
-    .votes-label { font-size: 10px; color: rgba(48,207,67,0.6); }
+    .votes-num { font-size: 16px; font-weight: 700; color: var(--accent-dark); line-height: 1; }
+    .votes-label { font-size: 10px; color: rgba(34,168,50,0.7); }
 
-    /* Top 3 highlight */
-    .row-top { background: rgba(48,207,67,0.04); border-radius: 6px; padding: 10px; margin-bottom: 4px; border-bottom: none !important; }
+    /* Top 3 rows */
+    .row-top { background: rgba(48,207,67,0.04); border-radius: 6px; padding: 10px; margin-bottom: 3px; border-bottom: none !important; }
 
-    /* Link arrow */
-    .link-arrow { font-size: 12px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
-    .link-arrow:hover { color: var(--ghost); }
+    /* Badges */
+    .badge {
+      display: inline-flex; align-items: center; padding: 2px 7px;
+      border-radius: 4px; font-size: 11px; font-weight: 600; white-space: nowrap;
+    }
+    .badge-green { background: var(--accent-light); color: var(--accent-dark); border: 1px solid var(--accent-border); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(217,119,6,0.2); }
+    .badge-blue  { background: var(--blue-bg);  color: var(--blue);  border: 1px solid rgba(79,70,229,0.2); }
+    .badge-red   { background: var(--red-bg);   color: var(--red);   border: 1px solid rgba(220,38,38,0.2); }
+    .badge-muted { background: var(--bg-card-alt); color: var(--text-muted); border: 1px solid var(--border); }
 
-    /* Sub-section label */
+    /* Reactions */
+    .reactions { font-size: 12px; color: var(--text-muted); min-width: 40px; text-align: right; flex-shrink: 0; }
+
+    /* Sub-label */
     .sub-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin: 20px 0 10px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-dim); margin: 20px 0 10px;
+      padding-bottom: 6px; border-bottom: 1px solid var(--border);
     }
-    .sub-label.amber { color: var(--amber); border-color: rgba(251,191,36,0.2); }
+    .sub-label.amber { color: var(--amber); border-color: rgba(217,119,6,0.2); }
 
-    /* PM Brief */
-    .brief-banner {
-      font-size: 14px;
-      color: var(--muted);
-      font-style: italic;
-      margin-bottom: 16px;
-      padding: 12px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-    }
-    .gen-btn {
-      display: block;
-      width: 100%;
-      padding: 14px;
-      background: var(--ghost);
-      color: #000;
-      font-size: 14px;
-      font-weight: 700;
-      border: none;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: opacity 0.2s;
-      margin-bottom: 20px;
-    }
-    .gen-btn:hover { opacity: 0.9; }
-    .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .loading-state {
-      display: none;
-      align-items: center;
-      gap: 10px;
-      padding: 16px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .loading-state.visible { display: flex; }
-    .spinner {
-      width: 16px; height: 16px;
-      border: 2px solid var(--border2);
-      border-top-color: var(--ghost);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      flex-shrink: 0;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .brief-output {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-    }
-    .brief-output h2 {
-      font-size: 16px;
-      font-weight: 700;
-      margin: 24px 0 12px;
-      padding-left: 12px;
-      border-left: 3px solid var(--ghost);
-      color: var(--text);
-    }
-    .brief-output h2:first-child { margin-top: 0; }
-    .brief-output h3 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; color: #c0c0d0; }
-    .brief-output p { margin: 8px 0; color: #d0d0e0; line-height: 1.7; }
-    .brief-output ul { margin: 8px 0 8px 20px; }
-    .brief-output li { margin: 4px 0; color: #d0d0e0; line-height: 1.7; }
-    .brief-output strong { color: var(--text); }
-    .brief-output code { font-family: monospace; font-size: 12px; background: var(--surface2); padding: 1px 5px; border-radius: 3px; color: var(--ghost); }
-    .brief-meta { font-size: 11px; color: var(--dim); margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-    .regen-btn { font-size: 11px; color: var(--muted); background: none; border: none; cursor: pointer; text-decoration: underline; }
-    .regen-btn:hover { color: var(--text); }
-
-    .brief-ready {
-      font-size: 12px;
-      color: var(--ghost);
-      margin-bottom: 12px;
-      display: none;
-    }
-    .brief-ready.visible { display: block; }
-
-    /* Skeletons */
-    .skeleton {
-      background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.5s infinite;
-      border-radius: 4px;
-      height: 16px;
-      margin: 8px 0;
-    }
-    .skeleton.short { width: 40%; }
-    .skeleton.medium { width: 70%; }
-    .skeleton.full { width: 100%; }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-    /* Source status footer */
-    .status-footer {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      padding: 16px 40px;
-      border-top: 1px solid var(--border);
-      margin-top: 40px;
-    }
-    .status-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted); }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dim); }
-    .status-dot.ok { background: var(--ghost); }
-    .status-dot.error { background: var(--red); }
-
-    /* HN comment snippet */
+    /* HN comment */
     .comment-text {
-      font-size: 13px;
-      color: #b0b0c0;
-      line-height: 1.6;
-      margin: 4px 0;
-      font-style: italic;
-      border-left: 2px solid var(--border2);
-      padding-left: 10px;
+      font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: 4px 0;
+      font-style: italic; border-left: 2px solid var(--border-mid); padding-left: 10px;
     }
 
-    /* Tags */
+    /* Tag chip */
     .tag-chip {
-      display: inline-flex;
-      padding: 1px 6px;
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: 4px;
-      font-size: 10px;
-      color: var(--muted);
-      margin-left: 4px;
+      display: inline-flex; padding: 1px 6px;
+      background: var(--bg-card-alt); border: 1px solid var(--border);
+      border-radius: 4px; font-size: 10px; color: var(--text-dim); margin-left: 4px;
     }
 
     /* Source note */
     .source-note {
-      font-size: 11px;
-      color: var(--dim);
-      margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--text-dim); margin-top: 12px;
+      padding-top: 10px; border-top: 1px solid var(--border);
     }
 
-    /* Reactions badge */
-    .reactions { font-size: 12px; color: var(--muted); min-width: 40px; text-align: right; }
-
-    /* Ghost releases */
+    /* Release items */
     .release-item { padding: 12px 0; border-bottom: 1px solid var(--border); }
     .release-item:last-child { border-bottom: none; }
-    .release-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
-    .release-title a { color: var(--text); text-decoration: none; }
-    .release-title a:hover { color: var(--ghost); }
-    .release-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
-    .release-date { font-size: 11px; color: var(--dim); font-family: monospace; margin-top: 2px; }
+    .release-title { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+    .release-title a { color: var(--text); }
+    .release-title a:hover { color: var(--accent-dark); }
+    .release-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    .release-date { font-size: 11px; color: var(--text-dim); font-family: monospace; margin-top: 2px; }
+
+    /* PM Brief */
+    .brief-banner {
+      font-size: 13px; color: var(--text-muted); font-style: italic;
+      margin-bottom: 16px; padding: 12px 16px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+    }
+    .gen-btn {
+      display: block; width: 100%; padding: 13px;
+      background: var(--btn-bg); color: var(--btn-text);
+      font-size: 14px; font-weight: 600; border: none; border-radius: var(--radius);
+      cursor: pointer; transition: opacity 0.2s; margin-bottom: 20px; font-family: inherit;
+    }
+    .gen-btn:hover { opacity: 0.85; }
+    .gen-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .brief-ready { font-size: 12px; color: var(--accent-dark); margin-bottom: 10px; display: none; }
+    .brief-ready.visible { display: block; }
+
+    .loading-state { display: none; align-items: center; gap: 10px; padding: 14px 0; color: var(--text-muted); font-size: 13px; }
+    .loading-state.visible { display: flex; }
+    .spinner { width: 15px; height: 15px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .brief-output-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow);
+    }
+    .brief-output h2 { font-size: 16px; font-weight: 700; margin: 24px 0 10px; padding-left: 12px; border-left: 3px solid var(--accent); color: var(--text); }
+    .brief-output h2:first-child { margin-top: 0; }
+    .brief-output h3 { font-size: 14px; font-weight: 600; margin: 14px 0 6px; color: var(--text); }
+    .brief-output p { margin: 6px 0; color: var(--text-muted); line-height: 1.7; font-size: 14px; }
+    .brief-output ul { margin: 6px 0 6px 20px; }
+    .brief-output li { margin: 4px 0; color: var(--text-muted); line-height: 1.7; font-size: 14px; }
+    .brief-output strong { color: var(--text); }
+    .brief-output code { font-family: monospace; font-size: 12px; background: var(--bg-card-alt); padding: 1px 5px; border-radius: 3px; color: var(--accent-dark); }
+    .brief-meta { font-size: 11px; color: var(--text-dim); margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .regen-btn { font-size: 11px; color: var(--text-muted); background: none; border: none; cursor: pointer; text-decoration: underline; font-family: inherit; }
+    .regen-btn:hover { color: var(--text); }
+
+    /* Skeletons */
+    .skeleton { background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-alt) 50%, var(--bg-card) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; height: 16px; margin: 10px 0; }
+    .skeleton.short { width: 35%; }
+    .skeleton.medium { width: 65%; }
+    .skeleton.full { width: 100%; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* Status footer */
+    .status-footer { display: flex; gap: 16px; flex-wrap: wrap; padding: 16px 24px; border-top: 1px solid var(--border); max-width: var(--max-w); margin: 0 auto; }
+    .status-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-dim); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border-mid); }
+    .status-dot.ok { background: var(--accent); }
+    .status-dot.error { background: var(--red); }
 
     @media (max-width: 600px) {
-      .header { padding: 16px 20px; }
-      .tabs { padding: 0 20px; }
-      .content { padding: 20px; }
-      .status-footer { padding: 12px 20px; }
-      .header-right { display: none; }
+      .shell { padding: 20px 16px 48px; }
+      .page-header h1 { font-size: 20px; }
     }
   </style>
 </head>
 <body>
 
-<header class="header">
-  <div class="header-left">
-    <div class="logo">
-      <span class="logo-dot">◉</span>
-      <span class="logo-text">Ghost PM Signal <span>/ Intelligence Dashboard</span></span>
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="ghost-icon">⬡</div>
+      Ghost PM Signal
+    </a>
+    <div class="nav-links">
+      <div class="suite-dropdown">
+        <button class="suite-btn">Ghost Suite ▾</button>
+        <div class="suite-menu">
+          <a href="https://ghost-pulse.vercel.app">◉ Ghost Pulse — member analytics</a>
+          <a href="https://ghost-repurpose.vercel.app">✦ Ghost Repurpose — content formats</a>
+          <a href="https://ghost-creator-advisor.vercel.app">👻 Ghost Creator Advisor — diagnosis</a>
+          <div class="suite-divider"></div>
+          <a href="https://ghost-intel-five.vercel.app">◎ Ghost Intel — releases</a>
+          <span class="suite-active">⬡ Ghost PM Signal — PM intelligence</span>
+        </div>
+      </div>
+      <a href="https://sinkrest.github.io/romans-lab" class="nav-link">Roman's Lab</a>
+      <a href="https://github.com/sinkrest/ghost-pm-signal" target="_blank" class="nav-link">GitHub</a>
+      <a href="https://romanmartins.com" target="_blank" class="nav-link">romanmartins.com</a>
     </div>
-    <div class="header-sub">User voice · Competitor watch · Community sentiment · Claude synthesis</div>
   </div>
-  <div class="header-right">
-    <span class="updated" id="updated">Loading...</span>
-    <a href="https://sinkrest.github.io/romans-lab" target="_blank" class="header-link">Roman's Lab</a>
-    <a href="https://github.com/sinkrest/ghost-pm-signal" target="_blank" class="header-link">GitHub</a>
-    <a href="https://romanmartins.com" target="_blank" class="header-link">romanmartins.com</a>
+</nav>
+
+<div class="shell">
+
+  <div class="page-header">
+    <div class="header-tag"><span>●</span> PM Intelligence · Ghost Creator Suite</div>
+    <h1>Ghost PM Signal</h1>
+    <p>User voice · Competitor watch · Community sentiment · Claude synthesis</p>
+    <div class="updated-label" id="updated">Loading signal data...</div>
   </div>
-</header>
 
-<div class="tabs">
-  <div class="tab active" data-tab="brief" onclick="switchTab('brief')">PM Brief</div>
-  <div class="tab" data-tab="votes" onclick="switchTab('votes')">Feature Votes</div>
-  <div class="tab" data-tab="github" onclick="switchTab('github')">GitHub</div>
-  <div class="tab" data-tab="hn" onclick="switchTab('hn')">HN Pulse</div>
-  <div class="tab" data-tab="competitors" onclick="switchTab('competitors')">Competitor Watch</div>
-  <div class="tab" data-tab="releases" onclick="switchTab('releases')">Ghost Releases</div>
-</div>
+  <div class="tab-bar">
+    <div class="tab-item active" data-tab="brief" onclick="switchTab('brief')">PM Brief</div>
+    <div class="tab-item" data-tab="votes" onclick="switchTab('votes')">Feature Votes</div>
+    <div class="tab-item" data-tab="github" onclick="switchTab('github')">GitHub</div>
+    <div class="tab-item" data-tab="hn" onclick="switchTab('hn')">Community</div>
+    <div class="tab-item" data-tab="competitors" onclick="switchTab('competitors')">Competitor Watch</div>
+    <div class="tab-item" data-tab="intel" onclick="switchTab('intel')">Ghost Intel</div>
+  </div>
 
-<div class="content">
-
-  <!-- PM Brief Tab -->
+  <!-- PM Brief -->
   <div class="section active" id="tab-brief">
-    <div class="brief-banner">"What should Ghost build next?" — Let Claude answer based on live signal data.</div>
-    <div class="brief-ready" id="brief-ready">✓ Signal data loaded — ready to generate PM brief</div>
+    <div class="brief-banner">"What should Ghost build next?" — Claude answers based on live signal data from Forum, GitHub, HN, and competitor changelogs.</div>
+    <div class="brief-ready" id="brief-ready">✓ Signal data loaded — ready to generate</div>
     <button class="gen-btn" id="gen-btn" onclick="generateBrief()">Generate PM Brief</button>
     <div class="loading-state" id="brief-loading">
       <div class="spinner"></div>
       Claude is reviewing this week's signals...
     </div>
     <div id="brief-output-wrap" style="display:none">
-      <div class="brief-output" id="brief-output"></div>
-      <div class="brief-meta">
-        <span id="brief-time"></span>
-        <button class="regen-btn" onclick="generateBrief()">Regenerate</button>
+      <div class="brief-output-card">
+        <div class="brief-output" id="brief-output"></div>
+        <div class="brief-meta">
+          <span id="brief-time"></span>
+          <button class="regen-btn" onclick="generateBrief()">Regenerate</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Feature Votes Tab -->
+  <!-- Feature Votes -->
   <div class="section" id="tab-votes">
     <div class="section-title">Feature Votes</div>
-    <div class="section-sub" id="votes-sub">Loading...</div>
+    <div class="section-sub" id="votes-sub">Loading Ghost Forum data...</div>
     <div class="card" id="votes-list">
-      <div class="skeleton full"></div>
-      <div class="skeleton medium"></div>
-      <div class="skeleton full"></div>
-      <div class="skeleton short"></div>
-      <div class="skeleton full"></div>
-      <div class="skeleton medium"></div>
+      <div class="skeleton full"></div><div class="skeleton medium"></div>
+      <div class="skeleton full"></div><div class="skeleton short"></div>
+      <div class="skeleton full"></div><div class="skeleton medium"></div>
     </div>
   </div>
 
-  <!-- GitHub Tab -->
+  <!-- GitHub -->
   <div class="section" id="tab-github">
     <div class="section-title">GitHub</div>
     <div class="section-sub">Feature requests from TryGhost/Ghost · ActivityPub strategic issues</div>
     <div class="card">
-      <div class="sub-label">Feature Requests — TryGhost/Ghost</div>
+      <div class="card-label">Feature Requests — TryGhost/Ghost</div>
       <div id="github-features">
-        <div class="skeleton full"></div>
-        <div class="skeleton medium"></div>
-        <div class="skeleton full"></div>
+        <div class="skeleton full"></div><div class="skeleton medium"></div><div class="skeleton full"></div>
       </div>
     </div>
     <div class="card">
-      <div class="sub-label amber">Ghost's Fediverse Bet — TryGhost/ActivityPub</div>
-      <div style="font-size:12px;color:var(--amber);margin-bottom:12px">Ghost is actively betting on the open social web. This repo tracks their Fediverse implementation.</div>
+      <div class="card-label amber">Ghost's Fediverse Bet — TryGhost/ActivityPub</div>
+      <div style="font-size:13px;color:var(--amber);margin-bottom:12px">Ghost is actively betting on the open social web. This repo tracks their Fediverse implementation.</div>
       <div id="github-activitypub">
-        <div class="skeleton full"></div>
-        <div class="skeleton medium"></div>
-        <div class="skeleton full"></div>
+        <div class="skeleton full"></div><div class="skeleton medium"></div><div class="skeleton full"></div>
       </div>
     </div>
   </div>
 
-  <!-- HN Pulse Tab -->
+  <!-- Community -->
   <div class="section" id="tab-hn">
-    <div class="section-title">HN Pulse</div>
-    <div class="section-sub">How the technical community talks about Ghost — last 90 days</div>
+    <div class="section-title">Community Pulse</div>
+    <div class="section-sub">Reddit · Hacker News — what Ghost users and the publishing community are saying</div>
     <div class="card">
-      <div class="sub-label">Discussions (stories)</div>
-      <div id="hn-stories">
-        <div class="skeleton full"></div>
-        <div class="skeleton medium"></div>
-        <div class="skeleton full"></div>
+      <div class="card-label">r/Ghost — Community Posts</div>
+      <div id="reddit-ghost">
+        <div class="skeleton full"></div><div class="skeleton medium"></div><div class="skeleton full"></div>
       </div>
     </div>
     <div class="card">
-      <div class="sub-label">Community Sentiment (comments)</div>
+      <div class="card-label">r/selfhosted · r/blogging — Ghost mentions</div>
+      <div id="reddit-community">
+        <div class="skeleton full"></div><div class="skeleton medium"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Hacker News — Discussions</div>
+      <div id="hn-stories">
+        <div class="skeleton full"></div><div class="skeleton medium"></div><div class="skeleton full"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Hacker News — Sentiment (comments)</div>
       <div id="hn-comments">
-        <div class="skeleton full"></div>
-        <div class="skeleton medium"></div>
+        <div class="skeleton full"></div><div class="skeleton medium"></div>
       </div>
     </div>
   </div>
 
-  <!-- Competitor Watch Tab -->
+  <!-- Competitor Watch -->
   <div class="section" id="tab-competitors">
     <div class="section-title">Competitor Watch</div>
-    <div class="section-sub">What Ghost's closest competitor is shipping</div>
+    <div class="section-sub">Substack · Medium — positioning and engineering signals</div>
     <div class="card">
-      <div class="sub-label">Kit (ConvertKit) — Recently Shipped</div>
-      <div id="kit-list">
-        <div class="skeleton full"></div>
-        <div class="skeleton medium"></div>
-        <div class="skeleton full"></div>
+      <div class="card-label">Substack — From the Blog</div>
+      <div id="substack-list">
+        <div class="skeleton full"></div><div class="skeleton medium"></div>
       </div>
-      <div class="source-note" style="margin-top:16px">
-        <strong>Note:</strong> Beehiiv and Substack changelogs are not publicly accessible. Kit is Ghost's most direct competitor in creator monetisation.<br>
-        <span style="color:var(--ghost);cursor:pointer" onclick="switchTab('brief')">→ See what this means for Ghost in PM Brief</span>
+    </div>
+    <div class="card">
+      <div class="card-label">Medium Engineering — Updates</div>
+      <div id="medium-list">
+        <div class="skeleton full"></div><div class="skeleton medium"></div>
       </div>
+    </div>
+    <div class="source-note" style="margin-top:4px">
+      Substack and Medium tracked via company/engineering blogs — no public product changelog exists for either. Kit removed as a tracked source.
+      <span style="color:var(--accent-dark);cursor:pointer;margin-left:8px" onclick="switchTab('brief')">→ See PM Brief for synthesis</span>
     </div>
   </div>
 
-  <!-- Ghost Releases Tab -->
-  <div class="section" id="tab-releases">
-    <div class="section-title">Ghost Releases</div>
-    <div class="section-sub">What shipped + positioning signals from ghost.org</div>
-    <div class="card">
-      <div class="sub-label">What Shipped — ghost.org/changelog</div>
-      <div id="ghost-changelog">
-        <div class="skeleton full"></div>
-        <div class="skeleton medium"></div>
-        <div class="skeleton full"></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="sub-label">From the Blog — ghost.org/blog</div>
-      <div id="ghost-blog">
-        <div class="skeleton full"></div>
-        <div class="skeleton medium"></div>
-      </div>
-    </div>
+  <!-- Ghost Intel -->
+  <div class="section" id="tab-intel">
+    <iframe
+      src="https://ghost-intel-five.vercel.app"
+      style="width:100%;height:820px;border:none;border-radius:var(--radius);display:block;"
+      loading="lazy"
+      title="Ghost Intel — What's happening at Ghost">
+    </iframe>
   </div>
 
-</div>
+</div><!-- /shell -->
 
-<div class="status-footer" id="status-footer">
+<div class="status-footer">
   <div class="status-item"><div class="status-dot" id="dot-forum"></div> Forum</div>
   <div class="status-item"><div class="status-dot" id="dot-github"></div> GitHub</div>
   <div class="status-item"><div class="status-dot" id="dot-activitypub"></div> ActivityPub</div>
+  <div class="status-item"><div class="status-dot" id="dot-reddit"></div> Reddit</div>
   <div class="status-item"><div class="status-dot" id="dot-hn"></div> HN</div>
-  <div class="status-item"><div class="status-dot" id="dot-kit"></div> Kit</div>
+  <div class="status-item"><div class="status-dot" id="dot-substack"></div> Substack</div>
+  <div class="status-item"><div class="status-dot" id="dot-medium"></div> Medium</div>
   <div class="status-item"><div class="status-dot" id="dot-changelog"></div> Changelog</div>
 </div>
 
@@ -491,7 +440,7 @@
 var appData = null;
 
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelector('[data-tab=' + name + ']').classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
@@ -528,7 +477,7 @@ function setDot(id, status) {
 
 function renderVotes(forum) {
   if (!forum || !forum.length) {
-    document.getElementById('votes-list').innerHTML = '<div style="color:var(--muted);font-size:13px">Ghost Forum unavailable. Try refreshing.</div>';
+    document.getElementById('votes-list').innerHTML = '<p style="color:var(--text-muted);font-size:13px">Ghost Forum unavailable. Try refreshing.</p>';
     document.getElementById('votes-sub').textContent = 'Unavailable';
     return;
   }
@@ -540,25 +489,22 @@ function renderVotes(forum) {
     html += '<div class="votes"><div class="votes-num">' + (t.votes || 0) + '</div><div class="votes-label">votes</div></div>';
     html += '<div class="row-main">';
     html += '<div class="row-title"><a href="' + esc(t.url) + '" target="_blank">' + esc(t.title) + '</a>';
-    if (isTop) html += ' <span class="badge badge-ghost" style="margin-left:6px">Top ' + (i+1) + '</span>';
+    if (isTop) html += ' <span class="badge badge-green" style="margin-left:6px">Top ' + (i+1) + '</span>';
     (t.tags || []).forEach(function(tag) { html += '<span class="tag-chip">' + esc(tag) + '</span>'; });
     html += '</div>';
-    html += '<div class="row-meta">';
-    html += '<span>' + t.replies + ' replies</span>';
-    html += '<span>' + (t.views || 0).toLocaleString() + ' views</span>';
-    html += '<span>' + timeAgo(t.last_activity) + '</span>';
-    html += '</div></div>';
-    html += '<div class="row-right"><a href="' + esc(t.url) + '" target="_blank" class="link-arrow">↗</a></div>';
+    html += '<div class="row-meta"><span>' + t.replies + ' replies</span><span>' + (t.views || 0).toLocaleString() + ' views</span><span>' + timeAgo(t.last_activity) + '</span></div>';
+    html += '</div>';
+    html += '<a href="' + esc(t.url) + '" target="_blank" class="link-arrow">↗</a>';
     html += '</div>';
   });
-  html += '<div class="source-note">Source: forum.ghost.org/c/ideas · Direct community votes · ' + forum.length + ' open requests</div>';
+  html += '<div class="source-note">Source: forum.ghost.org/c/ideas · ' + forum.length + ' open requests</div>';
   document.getElementById('votes-list').innerHTML = html;
 }
 
 function renderGitHub(features, activitypub) {
   var fEl = document.getElementById('github-features');
   if (!features || !features.length) {
-    fEl.innerHTML = '<div style="color:var(--muted);font-size:13px">GitHub feature requests unavailable.</div>';
+    fEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">GitHub feature requests unavailable.</p>';
   } else {
     var html = '';
     features.forEach(function(i) {
@@ -567,17 +513,15 @@ function renderGitHub(features, activitypub) {
       html += '<div class="row-main">';
       html += '<div class="row-title"><a href="' + esc(i.url) + '" target="_blank">' + esc(i.title) + '</a></div>';
       html += '<div class="row-meta"><span>#' + i.number + '</span><span>' + i.comments + ' comments</span><span>' + fmtDate(i.created_at) + '</span>';
-      html += '<span><span class="badge ' + (i.state === 'open' ? 'badge-ghost' : 'badge-muted') + '">' + i.state + '</span></span>';
-      html += '</div></div>';
-      html += '<a href="' + esc(i.url) + '" target="_blank" class="link-arrow">↗</a>';
-      html += '</div>';
+      html += '<span><span class="badge ' + (i.state === 'open' ? 'badge-green' : 'badge-muted') + '">' + i.state + '</span></span></div>';
+      html += '</div><a href="' + esc(i.url) + '" target="_blank" class="link-arrow">↗</a></div>';
     });
     fEl.innerHTML = html;
   }
 
   var aEl = document.getElementById('github-activitypub');
   if (!activitypub || !activitypub.length) {
-    aEl.innerHTML = '<div style="color:var(--muted);font-size:13px">ActivityPub issues unavailable.</div>';
+    aEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">ActivityPub issues unavailable.</p>';
   } else {
     var html2 = '';
     activitypub.forEach(function(i) {
@@ -586,11 +530,9 @@ function renderGitHub(features, activitypub) {
       html2 += '<div class="row-main">';
       html2 += '<div class="row-title"><a href="' + esc(i.url) + '" target="_blank">' + esc(i.title) + '</a></div>';
       html2 += '<div class="row-meta"><span>#' + i.number + '</span><span>' + i.comments + ' comments</span><span>' + fmtDate(i.created_at) + '</span></div>';
-      html2 += '</div>';
-      html2 += '<a href="' + esc(i.url) + '" target="_blank" class="link-arrow">↗</a>';
-      html2 += '</div>';
+      html2 += '</div><a href="' + esc(i.url) + '" target="_blank" class="link-arrow">↗</a></div>';
     });
-    html2 += '<div class="source-note">Note: ActivityPub = Ghost\'s strategic investment in the open social web (Fediverse/federation)</div>';
+    html2 += '<div class="source-note">ActivityPub = Ghost\'s strategic investment in the Fediverse / open social web</div>';
     aEl.innerHTML = html2;
   }
 }
@@ -598,90 +540,94 @@ function renderGitHub(features, activitypub) {
 function renderHN(stories, comments) {
   var sEl = document.getElementById('hn-stories');
   if (!stories || !stories.length) {
-    sEl.innerHTML = '<div style="color:var(--muted);font-size:13px">No recent HN discussions found.</div>';
+    sEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No recent HN discussions found.</p>';
   } else {
     var html = '';
     stories.forEach(function(h) {
       html += '<div class="row">';
-      html += '<div class="votes" style="background:rgba(255,102,0,0.08);border-color:rgba(255,102,0,0.2)"><div class="votes-num" style="color:#ff6600;font-size:14px">' + (h.points || 0) + '</div><div class="votes-label" style="color:rgba(255,102,0,0.5)">pts</div></div>';
+      html += '<div class="votes" style="background:rgba(255,102,0,0.07);border-color:rgba(255,102,0,0.18)">';
+      html += '<div class="votes-num" style="color:#d44f00;font-size:14px">' + (h.points || 0) + '</div>';
+      html += '<div class="votes-label" style="color:rgba(212,79,0,0.6)">pts</div></div>';
       html += '<div class="row-main">';
       html += '<div class="row-title"><a href="' + esc(h.hn_url) + '" target="_blank">' + esc(h.title) + '</a></div>';
       html += '<div class="row-meta"><span>' + h.comments + ' comments</span><span>' + timeAgo(h.created_at) + '</span>';
       if (h.url && h.url !== h.hn_url) html += '<a href="' + esc(h.url) + '" target="_blank" class="link-arrow" style="font-size:11px">source ↗</a>';
       html += '</div></div>';
-      html += '<a href="' + esc(h.hn_url) + '" target="_blank" class="link-arrow">↗</a>';
-      html += '</div>';
+      html += '<a href="' + esc(h.hn_url) + '" target="_blank" class="link-arrow">↗</a></div>';
     });
     sEl.innerHTML = html;
   }
 
   var cEl = document.getElementById('hn-comments');
   if (!comments || !comments.length) {
-    cEl.innerHTML = '<div style="color:var(--muted);font-size:13px">No recent HN comments found.</div>';
+    cEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No recent HN comments found.</p>';
   } else {
     var html2 = '';
     comments.forEach(function(c) {
-      html2 += '<div class="row">';
-      html2 += '<div class="row-main">';
+      html2 += '<div class="row"><div class="row-main">';
       if (c.text) html2 += '<div class="comment-text">' + esc(c.text) + (c.text.length >= 300 ? '...' : '') + '</div>';
       html2 += '<div class="row-meta" style="margin-top:4px"><span>in: ' + esc(c.story_title || '—') + '</span><span>' + esc(c.author) + '</span><span>' + timeAgo(c.created_at) + '</span></div>';
-      html2 += '</div>';
-      html2 += '<a href="' + esc(c.hn_url) + '" target="_blank" class="link-arrow">↗</a>';
-      html2 += '</div>';
+      html2 += '</div><a href="' + esc(c.hn_url) + '" target="_blank" class="link-arrow">↗</a></div>';
     });
     cEl.innerHTML = html2;
   }
 }
 
-function renderKit(kit) {
-  var el = document.getElementById('kit-list');
-  if (!kit || !kit.length) {
-    el.innerHTML = '<div style="color:var(--muted);font-size:13px">Kit changelog unavailable. Their site may have changed structure.</div>';
+function renderRssItems(items, elId, fallbackMsg) {
+  var el = document.getElementById(elId);
+  if (!items || !items.length) {
+    el.innerHTML = '<p style="color:var(--text-muted);font-size:13px">' + fallbackMsg + '</p>';
     return;
   }
   var html = '';
-  kit.forEach(function(k) {
-    var isFeature = k.category && k.category.toLowerCase().includes('feature');
-    var badgeClass = isFeature ? 'badge-blue' : 'badge-amber';
-    html += '<div class="row">';
-    html += '<div class="row-main">';
-    html += '<div class="row-title">' + esc(k.title) + ' <span class="badge ' + badgeClass + '" style="margin-left:6px">' + esc(k.category) + '</span></div>';
-    if (k.date) html += '<div class="row-meta"><span>' + esc(k.date) + '</span></div>';
-    html += '</div>';
-    html += '<a href="' + esc(k.url) + '" target="_blank" class="link-arrow">↗</a>';
+  items.forEach(function(r) {
+    html += '<div class="release-item">';
+    html += '<div class="release-title"><a href="' + esc(r.link || r.url || '#') + '" target="_blank">' + esc(r.title) + '</a></div>';
+    if (r.description) html += '<div class="release-desc">' + esc(r.description) + '</div>';
+    if (r.pubDate || r.date) html += '<div class="release-date">' + fmtDate(r.pubDate || r.date) + '</div>';
     html += '</div>';
   });
   el.innerHTML = html;
 }
 
-function renderReleases(changelog, blog) {
-  var cEl = document.getElementById('ghost-changelog');
-  if (!changelog || !changelog.length) {
-    cEl.innerHTML = '<div style="color:var(--muted);font-size:13px">Ghost changelog unavailable.</div>';
+function renderReddit(ghost, community) {
+  var gEl = document.getElementById('reddit-ghost');
+  if (!ghost || !ghost.length) {
+    gEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">r/Ghost unavailable.</p>';
   } else {
     var html = '';
-    changelog.forEach(function(r) {
-      html += '<div class="release-item">';
-      html += '<div class="release-title"><a href="' + esc(r.link) + '" target="_blank">' + esc(r.title) + '</a></div>';
-      if (r.description) html += '<div class="release-desc">' + esc(r.description) + '</div>';
-      if (r.pubDate) html += '<div class="release-date">' + fmtDate(r.pubDate) + '</div>';
+    ghost.forEach(function(p) {
+      html += '<div class="row">';
+      html += '<div class="votes" style="background:rgba(255,69,0,0.07);border-color:rgba(255,69,0,0.18)">';
+      html += '<div class="votes-num" style="color:#c44b00;font-size:14px">' + (p.score || 0) + '</div>';
+      html += '<div class="votes-label" style="color:rgba(196,75,0,0.6)">pts</div></div>';
+      html += '<div class="row-main">';
+      html += '<div class="row-title"><a href="' + esc(p.url) + '" target="_blank">' + esc(p.title) + '</a></div>';
+      html += '<div class="row-meta"><span>' + p.comments + ' comments</span>';
+      if (p.flair) html += '<span class="badge badge-muted" style="margin-left:4px">' + esc(p.flair) + '</span>';
+      html += '<span>' + timeAgo(new Date(p.created_utc * 1000)) + '</span>';
       html += '</div>';
+      if (p.text) html += '<div class="comment-text" style="margin-top:4px">' + esc(p.text.slice(0, 200)) + (p.text.length > 200 ? '...' : '') + '</div>';
+      html += '</div>';
+      html += '<a href="' + esc(p.url) + '" target="_blank" class="link-arrow">↗</a></div>';
     });
-    cEl.innerHTML = html;
+    html += '<div class="source-note">r/Ghost — ' + ghost.length + ' recent posts · reddit.com/r/Ghost</div>';
+    gEl.innerHTML = html;
   }
 
-  var bEl = document.getElementById('ghost-blog');
-  if (!blog || !blog.length) {
-    bEl.innerHTML = '<div style="color:var(--muted);font-size:13px">Ghost blog unavailable.</div>';
+  var cEl = document.getElementById('reddit-community');
+  if (!community || !community.length) {
+    cEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No recent mentions found.</p>';
   } else {
     var html2 = '';
-    blog.forEach(function(b) {
-      html2 += '<div class="release-item">';
-      html2 += '<div class="release-title"><a href="' + esc(b.link) + '" target="_blank">' + esc(b.title) + '</a></div>';
-      if (b.pubDate) html2 += '<div class="release-date">' + fmtDate(b.pubDate) + '</div>';
-      html2 += '</div>';
+    community.forEach(function(p) {
+      html2 += '<div class="row"><div class="row-main">';
+      html2 += '<div class="row-title"><a href="' + esc(p.url) + '" target="_blank">' + esc(p.title) + '</a>';
+      html2 += ' <span class="tag-chip">r/' + esc(p.subreddit) + '</span></div>';
+      html2 += '<div class="row-meta"><span>' + (p.score || 0) + ' pts</span><span>' + p.comments + ' comments</span><span>' + timeAgo(new Date(p.created_utc * 1000)) + '</span></div>';
+      html2 += '</div><a href="' + esc(p.url) + '" target="_blank" class="link-arrow">↗</a></div>';
     });
-    bEl.innerHTML = html2;
+    cEl.innerHTML = html2;
   }
 }
 
@@ -690,52 +636,41 @@ function loadData() {
     .then(function(r) { return r.json(); })
     .then(function(data) {
       appData = data;
-
-      // Update timestamp
       if (data.fetched_at) {
-        var d = new Date(data.fetched_at);
-        document.getElementById('updated').textContent = 'Updated ' + timeAgo(data.fetched_at);
+        document.getElementById('updated').textContent = 'Last updated ' + timeAgo(data.fetched_at) + ' · ' + new Date(data.fetched_at).toLocaleString();
       }
-
-      // Update status dots
       var s = data.sources_status || {};
       setDot('dot-forum', s.forum);
       setDot('dot-github', s.github);
       setDot('dot-activitypub', s.activitypub);
+      setDot('dot-reddit', s.reddit);
       setDot('dot-hn', s.hn);
-      setDot('dot-kit', s.kit);
+      setDot('dot-substack', s.substack);
+      setDot('dot-medium', s.medium);
       setDot('dot-changelog', s.changelog);
 
-      // Render all tabs
       renderVotes(data.forum);
-      renderGitHub(data.github?.features, data.github?.activitypub);
-      renderHN(data.hn?.stories, data.hn?.comments);
-      renderKit(data.competitors?.kit);
-      renderReleases(data.ghost?.changelog, data.ghost?.blog);
+      renderGitHub(data.github && data.github.features, data.github && data.github.activitypub);
+      renderReddit(data.reddit && data.reddit.ghost, data.reddit && data.reddit.community);
+      renderHN(data.hn && data.hn.stories, data.hn && data.hn.comments);
+      renderRssItems(data.competitors && data.competitors.substack, 'substack-list', 'Substack blog unavailable.');
+      renderRssItems(data.competitors && data.competitors.medium, 'medium-list', 'Medium engineering blog unavailable.');
 
-      // Signal brief is ready
       document.getElementById('brief-ready').classList.add('visible');
     })
     .catch(function(err) {
-      document.getElementById('updated').textContent = 'Load error';
+      document.getElementById('updated').textContent = 'Failed to load — try refreshing';
       console.error(err);
     });
 }
 
 function generateBrief() {
-  if (!appData) {
-    alert('Signal data is still loading. Please wait a moment and try again.');
-    return;
-  }
-
+  if (!appData) { alert('Signal data is still loading. Please wait.'); return; }
   var btn = document.getElementById('gen-btn');
   var loading = document.getElementById('brief-loading');
-  var outputWrap = document.getElementById('brief-output-wrap');
-
-  btn.disabled = true;
-  btn.textContent = 'Generating...';
-  loading.classList.add('visible');
-  outputWrap.style.display = 'none';
+  var wrap = document.getElementById('brief-output-wrap');
+  btn.disabled = true; btn.textContent = 'Generating...';
+  loading.classList.add('visible'); wrap.style.display = 'none';
 
   fetch('/api/synthesize', {
     method: 'POST',
@@ -745,32 +680,25 @@ function generateBrief() {
     .then(function(r) { return r.json(); })
     .then(function(result) {
       loading.classList.remove('visible');
-      btn.disabled = false;
-      btn.textContent = 'Generate PM Brief';
-
+      btn.disabled = false; btn.textContent = 'Generate PM Brief';
       if (result.error) {
-        document.getElementById('brief-output').innerHTML = '<div style="color:var(--red);font-size:13px">Error: ' + esc(result.error) + '</div>';
+        document.getElementById('brief-output').innerHTML = '<p style="color:var(--red);font-size:13px">Error: ' + esc(result.error) + '</p>';
       } else {
         document.getElementById('brief-output').innerHTML = marked.parse(result.synthesis || '');
       }
-
       if (result.generated_at) {
         document.getElementById('brief-time').textContent = 'Generated ' + new Date(result.generated_at).toLocaleTimeString() + ' · Signals from last 90 days';
       }
-
-      outputWrap.style.display = 'block';
+      wrap.style.display = 'block';
     })
     .catch(function(err) {
       loading.classList.remove('visible');
-      btn.disabled = false;
-      btn.textContent = 'Generate PM Brief';
-      document.getElementById('brief-output').innerHTML = '<div style="color:var(--red);font-size:13px">Request failed. Check your connection and try again.</div>';
-      outputWrap.style.display = 'block';
-      console.error(err);
+      btn.disabled = false; btn.textContent = 'Generate PM Brief';
+      document.getElementById('brief-output').innerHTML = '<p style="color:var(--red);font-size:13px">Request failed. Check your connection.</p>';
+      wrap.style.display = 'block';
     });
 }
 
-// Load on page open
 loadData();
 </script>
 </body>
