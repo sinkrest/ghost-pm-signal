@@ -277,9 +277,45 @@
     .intel-stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
     .intel-stat-sub a { color: var(--text-muted); }
 
-    .intel-divider { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); margin: 4px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    .intel-section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
+      color: var(--text-dim); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+    }
+    .intel-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    @media (max-width: 600px) { .intel-stats { grid-template-columns: 1fr 1fr; } }
+    .intel-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+    .intel-feed-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); align-items: flex-start; }
+    .intel-feed-item:first-child { padding-top: 0; }
+    .intel-feed-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .intel-feed-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 6px; }
+    .intel-feed-dot.dim { background: var(--text-dim); }
+    .intel-feed-content { flex: 1; min-width: 0; }
+    .intel-feed-title { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.4; margin-bottom: 2px; }
+    .intel-feed-title a { color: var(--text); }
+    .intel-feed-title a:hover { color: var(--accent-dark); }
+    .intel-feed-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .intel-feed-date { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+
+    .intel-release-item { display: flex; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .intel-release-item:first-child { padding-top: 0; }
+    .intel-release-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .intel-release-ver { font-size: 11px; font-weight: 700; font-family: monospace; color: var(--accent-dark); background: var(--accent-light); border: 1px solid var(--accent-border); border-radius: 4px; padding: 2px 7px; white-space: nowrap; align-self: flex-start; margin-top: 2px; flex-shrink: 0; }
+    .intel-release-content { flex: 1; min-width: 0; }
+    .intel-release-date { font-size: 11px; color: var(--text-dim); margin-bottom: 3px; }
+    .intel-release-notes { font-size: 12px; color: var(--text-muted); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .intel-release-link { font-size: 11px; color: var(--accent-dark); margin-top: 3px; display: inline-block; }
+    .intel-release-link:hover { text-decoration: underline; }
+
+    .intel-commit-item { display: flex; gap: 10px; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .intel-commit-item:first-child { padding-top: 0; }
+    .intel-commit-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .intel-commit-msg { flex: 1; color: var(--text-muted); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .intel-commit-msg a { color: var(--text-muted); }
+    .intel-commit-msg a:hover { color: var(--text); }
+    .intel-commit-date { font-size: 10px; color: var(--text-dim); white-space: nowrap; flex-shrink: 0; }
+
+    @media (max-width: 600px) { .intel-stats { grid-template-columns: 1fr 1fr; } .intel-two-col { grid-template-columns: 1fr; } }
 
     /* Status footer */
     .status-footer { display: flex; gap: 16px; flex-wrap: wrap; padding: 16px 24px; border-top: 1px solid var(--border); max-width: var(--max-w); margin: 0 auto; }
@@ -485,13 +521,34 @@
       </div>
     </div>
 
-    <div class="intel-divider">Full Intel Dashboard</div>
-    <iframe
-      src="https://ghost-intel-five.vercel.app"
-      style="width:100%;height:820px;border:none;border-radius:var(--radius);display:block;"
-      loading="lazy"
-      title="Ghost Intel — What's happening at Ghost">
-    </iframe>
+    <!-- Changelog + Blog -->
+    <div class="intel-two-col" id="intel-content" style="display:none">
+      <div>
+        <div class="intel-section-label">Changelog</div>
+        <div class="card" id="intel-changelog">
+          <div class="skeleton full"></div><div class="skeleton medium"></div><div class="skeleton full"></div>
+        </div>
+      </div>
+      <div>
+        <div class="intel-section-label">From the Ghost blog</div>
+        <div class="card" id="intel-resources">
+          <div class="skeleton full"></div><div class="skeleton medium"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GitHub Releases -->
+    <div id="intel-releases-wrap" style="display:none;margin-bottom:16px">
+      <div class="intel-section-label">GitHub Releases</div>
+      <div class="card" id="intel-releases"></div>
+    </div>
+
+    <!-- Recent Commits -->
+    <div id="intel-commits-wrap" style="display:none;margin-bottom:16px">
+      <div class="intel-section-label">Recent Commits</div>
+      <div class="card" id="intel-commits"></div>
+    </div>
+
   </div>
 
 </div><!-- /shell -->
@@ -777,6 +834,22 @@ function fmtNum(n) {
   return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
 }
 
+function renderIntelFeed(items, elId, dim) {
+  var el = document.getElementById(elId);
+  if (!items || !items.length) { el.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No data available.</p>'; return; }
+  var html = '';
+  items.forEach(function(item) {
+    html += '<div class="intel-feed-item">';
+    html += '<div class="intel-feed-dot' + (dim ? ' dim' : '') + '"></div>';
+    html += '<div class="intel-feed-content">';
+    html += '<div class="intel-feed-title"><a href="' + esc(item.link || item.url || '#') + '" target="_blank">' + esc(item.title) + '</a></div>';
+    if (item.description) html += '<div class="intel-feed-desc">' + esc(item.description) + '</div>';
+    html += '<div class="intel-feed-date">' + timeAgo(item.pubDate || item.date) + '</div>';
+    html += '</div></div>';
+  });
+  el.innerHTML = html;
+}
+
 function loadIntel() {
   fetch('https://ghost-intel-five.vercel.app/api/intel')
     .then(function(r) { return r.json(); })
@@ -784,6 +857,7 @@ function loadIntel() {
       document.getElementById('intel-skeleton').style.display = 'none';
       document.getElementById('intel-overview').style.display = 'block';
 
+      // Digest
       if (d.summary) {
         document.getElementById('intel-digest-text').textContent = d.summary;
         var meta = 'Based on GitHub releases, changelog, and recent commits';
@@ -792,12 +866,53 @@ function loadIntel() {
         document.getElementById('intel-digest-card').style.display = 'block';
       }
 
+      // Stats
       var r = d.repoStats || {};
       document.getElementById('intel-version').textContent = r.latestVersion || '—';
       document.getElementById('intel-version-date').textContent = d.releases && d.releases[0] ? timeAgo(d.releases[0].date) : '';
       document.getElementById('intel-rel-count').textContent = d.recentReleaseCount != null ? d.recentReleaseCount : '—';
       document.getElementById('intel-stars').textContent = fmtNum(r.stars);
       document.getElementById('intel-issues').textContent = fmtNum(r.openIssues);
+
+      // Changelog + Blog
+      document.getElementById('intel-content').style.display = 'grid';
+      renderIntelFeed(d.changelog, 'intel-changelog', false);
+      renderIntelFeed(d.resources, 'intel-resources', true);
+
+      // GitHub Releases
+      document.getElementById('intel-releases-wrap').style.display = 'block';
+      var relEl = document.getElementById('intel-releases');
+      if (!d.releases || !d.releases.length) {
+        relEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No release data.</p>';
+      } else {
+        var relHtml = '';
+        d.releases.slice(0, 6).forEach(function(rel) {
+          relHtml += '<div class="intel-release-item">';
+          relHtml += '<div class="intel-release-ver">' + esc(rel.version) + '</div>';
+          relHtml += '<div class="intel-release-content">';
+          relHtml += '<div class="intel-release-date">' + timeAgo(rel.date) + '</div>';
+          if (rel.notes) relHtml += '<div class="intel-release-notes">' + esc(rel.notes) + '</div>';
+          relHtml += '<a class="intel-release-link" href="' + esc(rel.url) + '" target="_blank">View release ↗</a>';
+          relHtml += '</div></div>';
+        });
+        relEl.innerHTML = relHtml;
+      }
+
+      // Recent Commits
+      document.getElementById('intel-commits-wrap').style.display = 'block';
+      var comEl = document.getElementById('intel-commits');
+      if (!d.recentCommits || !d.recentCommits.length) {
+        comEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No commit data.</p>';
+      } else {
+        var comHtml = '';
+        d.recentCommits.slice(0, 10).forEach(function(c) {
+          comHtml += '<div class="intel-commit-item">';
+          comHtml += '<div class="intel-commit-msg"><a href="' + esc(c.url) + '" target="_blank">' + esc(c.message) + '</a></div>';
+          comHtml += '<div class="intel-commit-date">' + timeAgo(c.date) + '</div>';
+          comHtml += '</div>';
+        });
+        comEl.innerHTML = comHtml;
+      }
     })
     .catch(function() {
       document.getElementById('intel-skeleton').style.display = 'none';
