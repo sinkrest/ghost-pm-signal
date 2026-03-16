@@ -480,23 +480,33 @@
   <!-- Ghost Intel -->
   <div class="section" id="tab-intel">
 
-    <!-- Overview: digest + stats (loaded from ghost-intel API) -->
+    <!-- Loading skeleton -->
     <div id="intel-skeleton">
-      <div class="skeleton full" style="height:96px;margin-bottom:14px;border-radius:var(--radius)"></div>
-      <div class="intel-stats">
+      <div class="skeleton full" style="height:100px;margin-bottom:14px;border-radius:var(--radius)"></div>
+      <div class="intel-stats" style="margin-bottom:20px">
         <div class="skeleton" style="height:78px;border-radius:var(--radius)"></div>
         <div class="skeleton" style="height:78px;border-radius:var(--radius)"></div>
         <div class="skeleton" style="height:78px;border-radius:var(--radius)"></div>
         <div class="skeleton" style="height:78px;border-radius:var(--radius)"></div>
       </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div class="skeleton" style="height:180px;border-radius:var(--radius)"></div>
+        <div class="skeleton" style="height:180px;border-radius:var(--radius)"></div>
+      </div>
+      <div class="skeleton" style="height:160px;border-radius:var(--radius);margin-bottom:16px"></div>
     </div>
 
-    <div id="intel-overview" style="display:none">
+    <!-- Full content (shown after data loads) -->
+    <div id="intel-body" style="display:none">
+
+      <!-- AI Digest -->
       <div class="intel-digest" id="intel-digest-card" style="display:none">
         <div class="intel-digest-label">This week at Ghost · AI Digest</div>
         <div class="intel-digest-text" id="intel-digest-text"></div>
         <div class="intel-digest-meta" id="intel-digest-meta"></div>
       </div>
+
+      <!-- Stats row -->
       <div class="intel-stats">
         <div class="intel-stat">
           <div class="intel-stat-label">Latest Version</div>
@@ -519,34 +529,31 @@
           <div class="intel-stat-sub"><a href="https://github.com/TryGhost/Ghost/issues" target="_blank">view on GitHub ↗</a></div>
         </div>
       </div>
-    </div>
 
-    <!-- Changelog + Blog -->
-    <div class="intel-two-col" id="intel-content" style="display:none">
-      <div>
-        <div class="intel-section-label">Changelog</div>
-        <div class="card" id="intel-changelog">
-          <div class="skeleton full"></div><div class="skeleton medium"></div><div class="skeleton full"></div>
+      <!-- Changelog + Blog -->
+      <div class="intel-two-col">
+        <div>
+          <div class="intel-section-label">Changelog</div>
+          <div class="card" id="intel-changelog"></div>
+        </div>
+        <div>
+          <div class="intel-section-label">From the Ghost blog</div>
+          <div class="card" id="intel-resources"></div>
         </div>
       </div>
-      <div>
-        <div class="intel-section-label">From the Ghost blog</div>
-        <div class="card" id="intel-resources">
-          <div class="skeleton full"></div><div class="skeleton medium"></div>
-        </div>
+
+      <!-- GitHub Releases -->
+      <div style="margin-bottom:16px">
+        <div class="intel-section-label">GitHub Releases</div>
+        <div class="card" id="intel-releases"></div>
       </div>
-    </div>
 
-    <!-- GitHub Releases -->
-    <div id="intel-releases-wrap" style="display:none;margin-bottom:16px">
-      <div class="intel-section-label">GitHub Releases</div>
-      <div class="card" id="intel-releases"></div>
-    </div>
+      <!-- Recent Commits -->
+      <div style="margin-bottom:16px">
+        <div class="intel-section-label">Recent Commits</div>
+        <div class="card" id="intel-commits"></div>
+      </div>
 
-    <!-- Recent Commits -->
-    <div id="intel-commits-wrap" style="display:none;margin-bottom:16px">
-      <div class="intel-section-label">Recent Commits</div>
-      <div class="card" id="intel-commits"></div>
     </div>
 
   </div>
@@ -855,7 +862,7 @@ function loadIntel() {
     .then(function(r) { return r.json(); })
     .then(function(d) {
       document.getElementById('intel-skeleton').style.display = 'none';
-      document.getElementById('intel-overview').style.display = 'block';
+      document.getElementById('intel-body').style.display = 'block';
 
       // Digest
       if (d.summary) {
@@ -875,12 +882,10 @@ function loadIntel() {
       document.getElementById('intel-issues').textContent = fmtNum(r.openIssues);
 
       // Changelog + Blog
-      document.getElementById('intel-content').style.display = 'grid';
       renderIntelFeed(d.changelog, 'intel-changelog', false);
       renderIntelFeed(d.resources, 'intel-resources', true);
 
       // GitHub Releases
-      document.getElementById('intel-releases-wrap').style.display = 'block';
       var relEl = document.getElementById('intel-releases');
       if (!d.releases || !d.releases.length) {
         relEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No release data.</p>';
@@ -899,7 +904,6 @@ function loadIntel() {
       }
 
       // Recent Commits
-      document.getElementById('intel-commits-wrap').style.display = 'block';
       var comEl = document.getElementById('intel-commits');
       if (!d.recentCommits || !d.recentCommits.length) {
         comEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px">No commit data.</p>';
@@ -916,7 +920,7 @@ function loadIntel() {
     })
     .catch(function() {
       document.getElementById('intel-skeleton').style.display = 'none';
-      document.getElementById('intel-overview').style.display = 'block';
+      document.getElementById('intel-body').style.display = 'block';
     });
 }
 
