@@ -858,7 +858,7 @@ function renderIntelFeed(items, elId, dim) {
 }
 
 function loadIntel() {
-  fetch('https://ghost-intel-five.vercel.app/api/intel')
+  fetch('/api/intel')
     .then(function(r) { return r.json(); })
     .then(function(d) {
       document.getElementById('intel-skeleton').style.display = 'none';
