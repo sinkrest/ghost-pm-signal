@@ -322,20 +322,7 @@
 </head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a href="#" class="nav-logo">
-      <div class="ghost-icon">⬡</div>
-      Ghost PM Signal
-    </a>
-    <div class="nav-links">
-
-      <a href="https://sinkrest.github.io/romans-lab" class="nav-link">Roman's Lab</a>
-      <a href="https://github.com/sinkrest/ghost-pm-signal" target="_blank" class="nav-link">GitHub</a>
-      <a href="https://romanmartins.com" target="_blank" class="nav-link">romanmartins.com</a>
-    </div>
-  </div>
-</nav>
+<nav class="nav" style="display:none"></nav>
 
 <div class="shell">
 
@@ -438,7 +425,7 @@
   <!-- Competitor Watch -->
   <div class="section" id="tab-competitors">
     <div class="section-title">Competitor Watch</div>
-    <div class="section-sub">Substack · Medium — positioning and engineering signals</div>
+    <div class="section-sub">Substack · Medium · Beehiiv — positioning and engineering signals</div>
     <div class="card">
       <div class="card-label">Substack — From the Blog</div>
       <div id="substack-list">
@@ -451,8 +438,14 @@
         <div class="skeleton full"></div><div class="skeleton medium"></div>
       </div>
     </div>
+    <div class="card">
+      <div class="card-label">Beehiiv — r/beehiiv Community</div>
+      <div id="beehiiv-list">
+        <div class="skeleton full"></div><div class="skeleton medium"></div>
+      </div>
+    </div>
     <div class="source-note" style="margin-top:4px">
-      Substack and Medium tracked via company/engineering blogs — no public product changelog exists for either. Kit removed as a tracked source.
+      Substack and Medium tracked via company blogs. Beehiiv tracked via Reddit mentions (beehiiv.com blocks serverless requests). Kit removed as a tracked source.
       <span style="color:var(--accent-dark);cursor:pointer;margin-left:8px" onclick="switchTab('brief')">→ See PM Brief for synthesis</span>
     </div>
   </div>
@@ -548,6 +541,7 @@
   <div class="status-item"><div class="status-dot" id="dot-hn"></div> HN</div>
   <div class="status-item"><div class="status-dot" id="dot-substack"></div> Substack</div>
   <div class="status-item"><div class="status-dot" id="dot-medium"></div> Medium</div>
+  <div class="status-item"><div class="status-dot" id="dot-beehiiv"></div> Beehiiv</div>
   <div class="status-item"><div class="status-dot" id="dot-changelog"></div> Changelog</div>
 </div>
 
@@ -762,6 +756,7 @@ function loadData() {
       setDot('dot-hn', s.hn);
       setDot('dot-substack', s.substack);
       setDot('dot-medium', s.medium);
+      setDot('dot-beehiiv', s.beehiiv);
       setDot('dot-changelog', s.changelog);
 
       renderVotes(data.forum);
@@ -770,6 +765,7 @@ function loadData() {
       renderHN(data.hn && data.hn.stories, data.hn && data.hn.comments);
       renderRssItems(data.competitors && data.competitors.substack, 'substack-list', 'Substack blog unavailable.');
       renderRssItems(data.competitors && data.competitors.medium, 'medium-list', 'Medium engineering blog unavailable.');
+      renderRssItems(data.competitors && data.competitors.beehiiv, 'beehiiv-list', 'Beehiiv blog unavailable.');
 
       document.getElementById('brief-ready').classList.add('visible');
     })
